@@ -1,3 +1,9 @@
+require('./models/User');
+require('./models/Team');
+require('./models/TeamMember');
+require('./models/Task');
+require('./models/Comment');
+require('./models/ActivityLog');
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
