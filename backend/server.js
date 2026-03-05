@@ -23,7 +23,11 @@ app.use('/api/auth', authRoutes);
 app.get('/', (req, res) => {
   res.send('TaskFlow API is running...');
 });
+const { protect } = require('./middleware/authMiddleware');
 
+app.get('/api/protected', protect, (req, res) => {
+  res.json({ message: `Hello ${req.user.name}, you are authorized!` });
+});
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
