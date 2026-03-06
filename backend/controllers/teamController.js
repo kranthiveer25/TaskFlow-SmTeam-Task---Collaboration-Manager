@@ -60,5 +60,18 @@ const addMember = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+// @desc    Get all teams
+// @route   GET /api/teams
+const getTeams = async (req, res) => {
+    try {
+      const teams = await Team.find()
+        .populate('leader', 'name email role');
+  
+      res.status(200).json({ teams });
+  
+    } catch (error) {
+      res.status(500).json({ message: 'Server error', error: error.message });
+    }
+  };
 
-module.exports = { createTeam, addMember };
+  module.exports = { createTeam, addMember, getTeams };
