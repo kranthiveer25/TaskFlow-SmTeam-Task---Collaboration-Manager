@@ -1,8 +1,7 @@
 const Task = require('../models/Task');
 const TeamMember = require('../models/TeamMember');
 
-// @desc    Create a new task
-// @route   POST /api/tasks
+
 const createTask = async (req, res) => {
   try {
     const { title, description, priority, deadline, teamId, assignedTo } = req.body;
@@ -34,8 +33,7 @@ const createTask = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-// @desc    Get all tasks
-// @route   GET /api/tasks
+
 const getTasks = async (req, res) => {
     try {
       const tasks = await Task.find()
@@ -49,5 +47,40 @@ const getTasks = async (req, res) => {
       res.status(500).json({ message: 'Server error', error: error.message });
     }
   };
+const updateTaskStatus = async (req, res) => {
+    try {
+      const { taskId } = req.params;
+      const { status } = req.body;
+  
+      // Validate status
+      const validStatuses = ['pending', 'inprogress', 'completed'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ 
+          message: 'Invalid status. Must be pending, inprogress or completed' 
+        });
+      }
+  
+      const task = await Task.findById(taskId);
+      if (!task) {
+        return res.status(404).json({ message: 'Task not found' });
+      }
+  
 
-  module.exports = { createTask, getTasks };
+      const isAssigned = task.assignedTo.toString() === req.user._id.toString();
+      const isLeader = req.user.role === 'teamleader' || req.user.role === 'admin';
+  
+      if (!isAssigned && !isLeader) {
+        return res.status(403).json({ message: 'Not authorized to update this task' });
+      }
+  
+      task.status = status;
+      await task.save();
+  
+      res.status(200).json({ message: 'Task status updated', task });
+  
+    } catch (error) {
+      res.status(500).json({ message: 'Server error', error: error.message });
+    }
+  };
+
+  module.exports = { createTask, getTasks, updateTaskStatus };
