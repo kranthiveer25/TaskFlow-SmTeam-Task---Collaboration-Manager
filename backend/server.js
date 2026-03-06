@@ -11,6 +11,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const { protect, authorizeRoles } = require('./middleware/authMiddleware');
+const teamRoutes = require('./routes/teamRoutes');
 
 dotenv.config();
 connectDB();
@@ -21,6 +22,7 @@ app.use(express.json());
 
 // Public routes
 app.use('/api/auth', authRoutes);
+app.use('/api/teams', teamRoutes);
 
 app.get('/', (req, res) => {
   res.send('TaskFlow API is running...');
