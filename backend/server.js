@@ -19,22 +19,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Public routes
 app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
   res.send('TaskFlow API is running...');
-});
-
-app.get('/api/protected', protect, (req, res) => {
-  res.json({ message: `Hello ${req.user.name}, you are authorized!` });
-});
-
-app.get('/api/admin', protect, authorizeRoles('admin'), (req, res) => {
-  res.json({ message: 'Welcome Admin!' });
-});
-
-app.get('/api/leader', protect, authorizeRoles('admin', 'teamleader'), (req, res) => {
-  res.json({ message: 'Welcome Team Leader!' });
 });
 
 const PORT = process.env.PORT || 8000;
