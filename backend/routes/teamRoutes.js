@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { createTeam } = require('../controllers/teamController');
+const { createTeam, addMember } = require('../controllers/teamController');
 const { protect, authorizeRoles } = require('../middleware/authMiddleware');
 
-// Only team leaders and admins can create teams
 router.post('/', protect, authorizeRoles('admin', 'teamleader'), createTeam);
+router.post('/:teamId/members', protect, authorizeRoles('admin', 'teamleader'), addMember);
 
 module.exports = router;
