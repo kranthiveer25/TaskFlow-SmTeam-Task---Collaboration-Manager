@@ -33,5 +33,25 @@ const addComment = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+const getComments = async (req, res) => {
+    try {
+      const { taskId } = req.params;
+  
+      // Check if task exists
+      const task = await Task.findById(taskId);
+      if (!task) {
+        return res.status(404).json({ message: 'Task not found' });
+      }
+  
+      const comments = await Comment.find({ task: taskId })
+        .populate('user', 'name email role')
+        .sort({ createdAt: 1 }); // oldest first
+  
+      res.status(200).json({ comments });
+  
+    } catch (error) {
+      res.status(500).json({ message: 'Server error', error: error.message });
+    }
+  };
 
-module.exports = { addComment };
+  module.exports = { addComment, getComments };

@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { addComment } = require('../controllers/commentController');
+const { addComment, getComments } = require('../controllers/commentController');
 const { protect } = require('../middleware/authMiddleware');
 
-// Any logged in user can comment
 router.post('/:taskId', protect, addComment);
+router.get('/:taskId', protect, getComments);
 
 module.exports = router;
