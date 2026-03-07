@@ -38,15 +38,26 @@ const createTask = async (req, res) => {
 
 const getTasks = async (req, res) => {
     try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 5;
+      const skip = (page - 1) * limit;
+  
+      const total = await Task.countDocuments();
       const tasks = await Task.find()
         .populate('assignedTo', 'name email')
         .populate('createdBy', 'name email')
-        .populate('team', 'name');
+        .populate('team', 'name')
+        .skip(skip)
+        .limit(limit);
   
-      res.status(200).json({ tasks });
-  
-    } catch (error) {
-      res.status(500).json({ message: 'Server error', error: error.message });
+      res.json({
+        tasks,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit)
+      });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
     }
   };
 const updateTaskStatus = async (req, res) => {

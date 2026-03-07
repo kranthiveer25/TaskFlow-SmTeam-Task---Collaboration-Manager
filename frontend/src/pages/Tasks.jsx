@@ -6,19 +6,23 @@ function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [keyword, setKeyword] = useState('');
   const [priority, setPriority] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
     if (!user) { navigate('/'); return; }
-    fetchTasks();
+    fetchTasks(1);
   }, []);
 
-  const fetchTasks = async () => {
+  const fetchTasks = async (pageNum = 1) => {
     try {
-      const res = await API.get('/tasks');
+      const res = await API.get(`/tasks?page=${pageNum}&limit=5`);
       setTasks(res.data.tasks);
+      setTotalPages(res.data.totalPages);
+      setPage(pageNum);
     } catch (err) {
       setError('Failed to load tasks');
     }
@@ -31,6 +35,8 @@ function Tasks() {
       if (priority) params.append('priority', priority);
       const res = await API.get(`/tasks/search?${params.toString()}`);
       setTasks(res.data.tasks);
+      setTotalPages(1);
+      setPage(1);
     } catch (err) {
       setError('Search failed');
     }
@@ -39,13 +45,13 @@ function Tasks() {
   const handleReset = () => {
     setKeyword('');
     setPriority('');
-    fetchTasks();
+    fetchTasks(1);
   };
 
   const updateStatus = async (taskId, newStatus) => {
     try {
       await API.patch(`/tasks/${taskId}/status`, { status: newStatus });
-      fetchTasks();
+      fetchTasks(page);
     } catch (err) {
       alert('Failed to update status');
     }
@@ -196,6 +202,28 @@ function Tasks() {
             )}
           </div>
         ))}
+      </div>
+
+      {/* Pagination */}
+      <div style={{
+        display: 'flex', justifyContent: 'center',
+        alignItems: 'center', gap: '10px', marginTop: '30px'
+      }}>
+        <button
+          onClick={() => fetchTasks(page - 1)}
+          disabled={page === 1}
+          style={{ padding: '8px 16px', cursor: page === 1 ? 'not-allowed' : 'pointer' }}
+        >
+          ← Prev
+        </button>
+        <span>Page <strong>{page}</strong> of <strong>{totalPages}</strong></span>
+        <button
+          onClick={() => fetchTasks(page + 1)}
+          disabled={page === totalPages}
+          style={{ padding: '8px 16px', cursor: page === totalPages ? 'not-allowed' : 'pointer' }}
+        >
+          Next →
+        </button>
       </div>
     </div>
   );
