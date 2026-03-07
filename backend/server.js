@@ -15,6 +15,7 @@ const { protect, authorizeRoles } = require('./middleware/authMiddleware');
 const taskRoutes = require('./routes/taskRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const activityRoutes = require('./routes/activityRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 dotenv.config();
 connectDB();
 
@@ -27,6 +28,7 @@ app.use('/api/teams', teamRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/activity', activityRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get('/', (req, res) => {
   res.send('TaskFlow API is running...');
