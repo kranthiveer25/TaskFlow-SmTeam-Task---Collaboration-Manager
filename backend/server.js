@@ -23,6 +23,23 @@ connectDB();
 const app = express();
 app.use(cors());
 app.use(express.json());
+// Sanitize inputs - prevent $ and . in keys
+app.use((req, res, next) => {
+  const sanitize = (obj) => {
+    if (obj && typeof obj === 'object') {
+      Object.keys(obj).forEach((key) => {
+        if (key.startsWith('$') || key.includes('.')) {
+          delete obj[key];
+        } else {
+          sanitize(obj[key]);
+        }
+      });
+    }
+  };
+  sanitize(req.body);
+  sanitize(req.query);
+  next();
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/teams', teamRoutes);
