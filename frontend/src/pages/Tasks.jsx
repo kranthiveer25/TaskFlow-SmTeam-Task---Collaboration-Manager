@@ -132,7 +132,10 @@ function Tasks() {
                 borderRadius: '6px',
                 padding: '12px',
                 marginBottom: '10px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                borderLeft: task.deadline && new Date(task.deadline) < new Date() && task.status !== 'completed'
+                  ? '4px solid red'
+                  : '4px solid transparent'
               }}>
                 <strong>{task.title}</strong>
                 <p style={{ fontSize: '0.85rem', color: '#555', margin: '4px 0' }}>
@@ -144,6 +147,22 @@ function Tasks() {
                 <p style={{ fontSize: '0.8rem', margin: '4px 0' }}>
                   🎯 Priority: <strong>{task.priority}</strong>
                 </p>
+
+                {task.deadline && (() => {
+                  const isOverdue = new Date(task.deadline) < new Date() && task.status !== 'completed';
+                  return (
+                    <p style={{
+                      fontSize: '0.8rem',
+                      margin: '4px 0',
+                      color: isOverdue ? 'red' : '#555',
+                      fontWeight: isOverdue ? 'bold' : 'normal'
+                    }}>
+                      📅 Deadline: {new Date(task.deadline).toLocaleDateString()}
+                      {isOverdue && ' ⚠️ OVERDUE'}
+                    </p>
+                  );
+                })()}
+
                 <div style={{ marginTop: '8px', display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                   {columns.filter(c => c !== col).map((c) => (
                     <button
