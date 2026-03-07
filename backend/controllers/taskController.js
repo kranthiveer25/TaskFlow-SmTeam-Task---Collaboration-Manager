@@ -109,4 +109,32 @@ const deleteTask = async (req, res) => {
       res.status(500).json({ message: 'Server error', error: error.message });
     }
   };
-  module.exports = { createTask, getTasks, updateTaskStatus, deleteTask };
+const searchTasks = async (req, res) => {
+    try {
+      const { status, priority, assignedTo, keyword } = req.query;
+  
+      // Build filter object dynamically
+      const filter = {};
+  
+      if (status) filter.status = status;
+      if (priority) filter.priority = priority;
+      if (assignedTo) filter.assignedTo = assignedTo;
+      if (keyword) {
+        filter.$or = [
+          { title: { $regex: keyword, $options: 'i' } },
+          { description: { $regex: keyword, $options: 'i' } }
+        ];
+      }
+  
+      const tasks = await Task.find(filter)
+        .populate('assignedTo', 'name email')
+        .populate('createdBy', 'name email')
+        .populate('team', 'name');
+  
+      res.status(200).json({ count: tasks.length, tasks });
+  
+    } catch (error) {
+      res.status(500).json({ message: 'Server error', error: error.message });
+    }
+  };
+  module.exports = { createTask, getTasks, updateTaskStatus, deleteTask, searchTasks };
