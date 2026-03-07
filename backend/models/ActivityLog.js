@@ -18,4 +18,7 @@ const activityLogSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+activityLogSchema.index({ createdAt: -1 });
+activityLogSchema.index({ task: 1 });
+
 module.exports = mongoose.model('ActivityLog', activityLogSchema);

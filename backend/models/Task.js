@@ -39,4 +39,10 @@ const taskSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+taskSchema.index({ status: 1 });
+taskSchema.index({ priority: 1 });
+taskSchema.index({ assignedTo: 1 });
+taskSchema.index({ team: 1 });
+taskSchema.index({ deadline: 1 });
+
 module.exports = mongoose.model('Task', taskSchema);
